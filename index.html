@@ -8,15 +8,18 @@
 </head>
 <body>
     <div class="calculator">
-    <p class="display"></p>
+        <p class="display"></p>
         <div class="container">
-            <button class="onDisplay">1</button><button class="onDisplay">2</button><button class="onDisplay">3</button><button class="onDisplay" id="gray">+</button><br>
-            <button class="onDisplay">4</button><button class="onDisplay">5</button><button class="onDisplay">6</button><button class="onDisplay" class="minus" id="gray">-</button><br>
-            <button class="onDisplay">7</button><button class="onDisplay">8</button><button class="onDisplay">9</button><button class="onDisplay" id="gray">x</button><br>
-            <button class="onDisplay">0</button><button class="clear">C</button><button class="equals">=</button><button class="onDisplay" id="gray">/</button><br>
+            <button class="digit">1</button><button class="digit">2</button><button class="digit">3</button><button class="operator" id="gray">+</button><br>
+            <button class="digit">4</button><button class="digit">5</button><button class="digit">6</button><button class="operator" class="minus" id="gray">-</button><br>
+            <button class="digit">7</button><button class="digit">8</button><button class="digit">9</button><button class="operator" id="gray">x</button><br>
+            <button class="digit">0</button><button class="clear">C</button><button class="equals">=</button><button class="operator" id="gray">/</button><br>
         </div>
         <div class="botomButtons">
-            <button id="dot">.</button><button id="arrow">&#8592</button>
+            <button class="digit" id="float">.</button>
+            <button id="backspace">&#8592</button>
+            <button id="plusMinus">+ / -</button>
+            <button id="power">⏼</button>
         </div>
     </div>
 </body>
