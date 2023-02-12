@@ -1,17 +1,3 @@
-//create functions
-let add = (a, b) => {return +a + +b}
-let subtract = (a, b) => {return +a - +b}
-let multiply = (a, b) => {return +a * +b}
-let divide = (a, b) => {if (b !== '0') return a/b
-else return 'ERROR!!!'}
-
-let operate = (a, operator, b) => {
-    if (operator === '+') return add (a, b)
-    if (operator === '-') return subtract (a, b)
-    if (operator === '*') return multiply (a, b)
-    if (operator === '/') return divide (a, b)
-}
-
 const digits = document.querySelectorAll('.digit')
 const operators = document.querySelectorAll('.operator')
 const display = document.querySelector('.display')
@@ -26,135 +12,90 @@ let secondArgument = ''
 let operator
 display.textContent = firstArgument
 
-//append numbers with mouse
-for (let elem of digits) {
-    elem.addEventListener('click', function () {addNumber(this.textContent)
-    })
-}
-
-//append numbers with keyboard
+//work on keyboard
 window.addEventListener('keydown', function(e) {
-if (+e.key > 0 && +e.key < 11 || e.key === '0') addNumber (e.key)
-})
-
-//append operator with mouse
-for (let elem of operators) {
-    elem.addEventListener('click', function(){
-        if (!secondArgument) addOperator (this.textContent) // set up operator   
-        else {let result = equal(firstArgument, operator, secondArgument)
-            //operator = this.textContent
-        } //output result             
-    })
-}
-
-//append operator with keyboard
-window.addEventListener('keydown', function(e) {
-    if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
-    if (!secondArgument) addOperator(e.key)
+if (+e.key > 0 && +e.key < 11 || e.key === '0') addNumber (e.key)//append numbers
+if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {//append operator
+if (!secondArgument) addOperator(e.key)
     else {
     let result = equal(firstArgument, operator, secondArgument)
     operator = e.key
     }
 }
+if (e.key === '.') addDot(e.key)//append dot
+if (e.key === 'Enter') {let result = equal(firstArgument, operator, secondArgument)}//output result
+if (e.key === ' ') clearing()//reset
+if (e.key === 'Backspace') backspacing()//backspace
+if (e.key === 'End') changeSign()//plusMinus
+if (e.key === 'Escape') onOff ()//onOff
 })
 
-//append dot with mouse
-dot.addEventListener('click', function() {
+//work on screen
+for (let elem of digits) {//append numbers
+    elem.addEventListener('click', function () {addNumber(this.textContent)
+    })
+}
+
+for (let elem of operators) {//append operator and output result
+    elem.addEventListener('click', function(){
+        if (!secondArgument) addOperator (this.textContent) // set up operator   
+        else {let result = equal(firstArgument, operator, secondArgument) //output result
+        }             
+    })
+}
+
+dot.addEventListener('click', function() {//append dot
     addDot()
 })
 
-//append dot with keyboard
-window.addEventListener('keydown', function(e) {
-    if (e.key === '.') addDot(e.key)
-})
-
-//output result with mouse
-equals.addEventListener('click', function() {
+equals.addEventListener('click', function() {//output result
     let result = equal(firstArgument, operator, secondArgument)
 })
 
-//output result with keyboard
-window.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-    let result = equal(firstArgument, operator, secondArgument)
-}
-})
-
-//reset with mouse
-clear.addEventListener('click', function() {
+clear.addEventListener('click', function() {//reset
     clearing()
 })
-//reset with keyboard
-window.addEventListener('keydown', function(e) {
-    if (e.key === ' ') clearing()
-})
 
-//backspace with mouse
-backspace.addEventListener('click', function(){
+backspace.addEventListener('click', function(){//backspace
     backspacing()
 })
 
-//backspace with keyboard
-window.addEventListener('keydown', function(e) {
-    if (e.key === 'Backspace') backspacing()
-})
-
-//plusMinus with mouse
-plusMinus.addEventListener('click', function(){
+plusMinus.addEventListener('click', function(){//plusMinus
     changeSign()
 })
 
-//plusMinus with keyboard
-window.addEventListener('keydown', function(e) {
-    if (e.key === 'End') changeSign()
-})
-
-//onOff with mouse
-power.addEventListener('click', function(){
+power.addEventListener('click', function(){//onOff
     onOff()
 })
-
-//onOff with keyboard
-window.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') onOff ()
-})
-
+//FUNCTIONS
 function addNumber (content) {
     if (!operator) {firstArgument = Number(firstArgument + content).toString()
     limiting(firstArgument)
-}
+    }
     else {secondArgument += content
     limiting(secondArgument)
     }
 }
-
 function addOperator (content) { // add operator
     operator = content
 }
-
 function equal (a, operator, b) {
     if (secondArgument){
     firstArgument = operate (a, operator, b)
     secondArgument = ''
     trimmingResult(firstArgument.toString())
     return firstArgument
+    }
 }
-}
-
 function clearing() {
-firstArgument = '0'
-secondArgument = ''
-operator = undefined
-display.textContent = firstArgument
+    firstArgument = '0'
+    secondArgument = ''
+    operator = undefined
+    display.textContent = firstArgument
 }
-
 function backspacing() {
     function clean (argument) {
-        return argument
-        .toString()
-        .split('')
-        .slice(0, argument.toString().split('').length - 1)
-        .join('')
+    return argument.toString().split('').slice(0, argument.toString().split('').length - 1).join('')
 }
     if (!operator && firstArgument !== '0') {
     firstArgument = clean(firstArgument)
@@ -167,7 +108,6 @@ function backspacing() {
     display.textContent = secondArgument
 }
 }
-
 function changeSign() {
     if (!operator && firstArgument !== '0'){
     firstArgument = -firstArgument
@@ -178,12 +118,10 @@ function changeSign() {
     display.textContent = secondArgument
 }
 }
-
 function onOff() {
     display.classList.toggle('off')
     clearing()
 }
-
 function addDot() {
     if (!operator && !firstArgument.includes('.')){
     firstArgument += '.'
@@ -194,11 +132,9 @@ function addDot() {
     display.textContent = secondArgument
     }
 }
-
 function limiting(string) {
     if (string.length < 13) display.textContent = string
 }
-
 function trimmingResult(result) {
     if (result.length < 13) display.textContent = result
     else {
@@ -208,6 +144,19 @@ function trimmingResult(result) {
             display.textContent = result
         }
     }
+}
+//math functions
+let add = (a, b) => {return +a + +b}
+let subtract = (a, b) => {return +a - +b}
+let multiply = (a, b) => {return +a * +b}
+let divide = (a, b) => {if (b !== '0') return a/b
+else return 'ERROR!!!'}
+
+let operate = (a, operator, b) => {
+    if (operator === '+') return add (a, b)
+    if (operator === '-') return subtract (a, b)
+    if (operator === '*') return multiply (a, b)
+    if (operator === '/') return divide (a, b)
 }
 
 
