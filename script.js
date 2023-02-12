@@ -8,145 +8,246 @@ else return 'ERROR!!!'}
 let operate = (a, operator, b) => {
     if (operator === '+') return add (a, b)
     if (operator === '-') return subtract (a, b)
-    if (operator === 'x') return multiply (a, b)
+    if (operator === '*') return multiply (a, b)
     if (operator === '/') return divide (a, b)
 }
 
-let display = document.querySelector('.display')
-let a
-let b = ''
-let operator = ''
-let subA = '0'
-display.textContent = 0
+const digits = document.querySelectorAll('.digit')
+const operators = document.querySelectorAll('.operator')
+const display = document.querySelector('.display')
+const power = document.getElementById('power')
+const equals = document.querySelector('.equals')
+const plusMinus = document.getElementById('plusMinus')
+const clear = document.querySelector('.clear')
+const backspace = document.getElementById('backspace')
+const dot = document.getElementById('float')
+let firstArgument = '0'
+let secondArgument = ''
+let operator
+display.textContent = firstArgument
 
-let power = document.getElementById('power')
-power.addEventListener('click', function() {
-    display.classList.toggle('off')
-    b = ''
-    operator = ''
-    subA = '0'
-    display.textContent = 0
-})
-
-//in the moment of pressing digit or dot
-function pressDigitOrDot () {
-let digits = document.querySelectorAll('.digit')
-for (let elem of digits)
-elem.addEventListener('click', function() {
-    
-
-    if (a)//operator was pressed
-    {if (b.length < 12) {//limiting length of the first argument
-        if (this.textContent === '.' && b && !b.includes('.')) {
-        b += '.'
-        display.textContent += '.' }
-      else if (this.textContent !== '.'){
-    b += this.textContent
-    display.textContent = b
-} 
-}
-    }
-    else {//operator wasn't pressed yet
-        if (subA.length < 13) {//limiting length of the second argument
-        if (this.textContent === '.' && !subA.includes('.')) {//add 'float point'
-            subA += '.'
-            display.textContent += '.' 
-        }
-        else if (this.textContent !== '.'){
-        subA += this.textContent
-    display.textContent = +subA
-}
-    }
-    }
-}
-)
-}
-pressDigitOrDot()
-
-function pressOperator () {
-//in the moment of pressing operator
-let operators = document.querySelectorAll('.operator')
-for (let elem of operators)
-elem.addEventListener('click', function() {
-if (b) {let result = (operate (a, operator, b))//show result on screen when there are both arguments
-if (result > 999999999999) {result = 'TooBigNumb'}
-let array = result.toString().split('.')
-if (result.toString().length > 12){
-console.log(11 - array[0].length)
-result = result.toFixed(11 - array[0].length)
-}
-subA = `${result}`
-display.textContent = subA
-b = ''
-} 
-a = subA//create first argument and show it in display
-operator = this.textContent
-})
-}
-pressOperator()
-
-function pressEquals () {
-let equals = document.querySelector('.equals')
-equals.addEventListener('click', function () {
-if (b) {let result = (operate (a, operator, b))
-if (result > 999999999999) {result = 'TooBigNumb'}
-let array = result.toString().split('.')
-if (result.toString().length > 12){
-console.log(11 - array[0].length)
-result = result.toFixed(11 - array[0].length)
-}
-subA = `${result}`
-display.textContent = subA
-b = ''
-} 
-})
-}
-pressEquals()
-
-function clear () {
-let clear = document.querySelector('.clear')
-clear.addEventListener('click', function(){
-    a = undefined
-    b = ''
-    operator = ''
-    subA = '0'
-    display.textContent = 0
-})
-}
-clear()
-
-function backspace () {
-    let backspace = document.getElementById('backspace')
-    backspace.addEventListener('click', function (){
-        if (subA && !a){
-            subA = subA.split('').slice(0, subA.split('').length -1).join('')
-            display.textContent = +subA
-        }
-        else if (b) {
-            b = b.split('').slice(0, b.split('').length -1).join('')
-            display.textContent = +b
-        }
+//append numbers with mouse
+for (let elem of digits) {
+    elem.addEventListener('click', function () {addNumber(this.textContent)
     })
 }
-backspace()
 
-function switchMinusPlus () {
-    let plusMinus = document.getElementById('plusMinus')
-    let counter = 1
-    plusMinus.addEventListener('click', function(){
-        //until operator became pressed
-        if (!a && !b && subA){
-            subA = -subA
-            display.textContent = subA       
+//append numbers with keyboard
+window.addEventListener('keydown', function(e) {
+if (+e.key > 0 && +e.key < 11 || e.key === '0') addNumber (e.key)
+})
+
+//append operator with mouse
+for (let elem of operators) {
+    elem.addEventListener('click', function(){
+        if (!secondArgument) addOperator (this.textContent) // set up operator   
+        else {let result = equal(firstArgument, operator, secondArgument)
+            //operator = this.textContent
+        } //output result             
+    })
 }
-//after operator became pressed
-else if (b) {
-    b = -b
-            display.textContent = b
+
+//append operator with keyboard
+window.addEventListener('keydown', function(e) {
+    if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+    if (!secondArgument) addOperator(e.key)
+    else {
+    let result = equal(firstArgument, operator, secondArgument)
+    operator = e.key
+    }
 }
 })
+
+//append dot with mouse
+dot.addEventListener('click', function() {
+    addDot()
+})
+
+//append dot with keyboard
+window.addEventListener('keydown', function(e) {
+    if (e.key === '.') addDot(e.key)
+})
+
+//output result with mouse
+equals.addEventListener('click', function() {
+    let result = equal(firstArgument, operator, secondArgument)
+})
+
+//output result with keyboard
+window.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+    let result = equal(firstArgument, operator, secondArgument)
 }
-switchMinusPlus ()
+})
+
+//reset with mouse
+clear.addEventListener('click', function() {
+    clearing()
+})
+//reset with keyboard
+window.addEventListener('keydown', function(e) {
+    if (e.key === ' ') clearing()
+})
+
+//backspace with mouse
+backspace.addEventListener('click', function(){
+    backspacing()
+})
+
+//backspace with keyboard
+window.addEventListener('keydown', function(e) {
+    if (e.key === 'Backspace') backspacing()
+})
+
+//plusMinus with mouse
+plusMinus.addEventListener('click', function(){
+    changeSign()
+})
+
+//plusMinus with keyboard
+window.addEventListener('keydown', function(e) {
+    if (e.key === 'End') changeSign()
+})
+
+//onOff with mouse
+power.addEventListener('click', function(){
+    onOff()
+})
+
+//onOff with keyboard
+window.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') onOff ()
+})
+
+function addNumber (content) {
+    if (!operator) {firstArgument = Number(firstArgument + content).toString()
+    limiting(firstArgument)
+}
+    else {secondArgument += content
+    limiting(secondArgument)
+    }
+}
+
+function addOperator (content) { // add operator
+    operator = content
+}
+
+function equal (a, operator, b) {
+    if (secondArgument){
+    firstArgument = operate (a, operator, b)
+    secondArgument = ''
+    trimmingResult(firstArgument.toString())
+    return firstArgument
+}
+}
+
+function clearing() {
+firstArgument = '0'
+secondArgument = ''
+operator = undefined
+display.textContent = firstArgument
+}
+
+function backspacing() {
+    function clean (argument) {
+        return argument
+        .toString()
+        .split('')
+        .slice(0, argument.toString().split('').length - 1)
+        .join('')
+}
+    if (!operator && firstArgument !== '0') {
+    firstArgument = clean(firstArgument)
+    if (firstArgument.length === 0) firstArgument = '0'
+    display.textContent = firstArgument
+}
+    else if (secondArgument) {
+    secondArgument = clean(secondArgument)
+    if (secondArgument.length === 0) secondArgument = '0'
+    display.textContent = secondArgument
+}
+}
+
+function changeSign() {
+    if (!operator && firstArgument !== '0'){
+    firstArgument = -firstArgument
+    display.textContent = firstArgument
+}
+    else if (secondArgument){
+    secondArgument = -secondArgument
+    display.textContent = secondArgument
+}
+}
+
+function onOff() {
+    display.classList.toggle('off')
+    clearing()
+}
+
+function addDot() {
+    if (!operator && !firstArgument.includes('.')){
+    firstArgument += '.'
+    display.textContent = firstArgument
+    }
+    else if (secondArgument && operator && !secondArgument.includes('.')) {
+    secondArgument += '.'
+    display.textContent = secondArgument
+    }
+}
+
+function limiting(string) {
+    if (string.length < 13) display.textContent = string
+}
+
+function trimmingResult(result) {
+    if (result.length < 13) display.textContent = result
+    else {
+        if (!result.includes('.')) display.textContent = 'toBigNumbers'
+        else {
+            result = (+result).toFixed(11 - result.split('.')[0].length)
+            display.textContent = result
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
